@@ -31,9 +31,20 @@ services:
     env_file:
       - .env
     environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
       - REDIS_URL=redis://redis:6379
       - PORT=8000
       - PYTHONUNBUFFERED=1
+      - EMBEDDING_MODEL=text-embedding-3-small
+      - CONVERSATION_TABLE=conversations
+      - VECTOR_TABLE=conversation_vectors
+      - SESSION_TIMEOUT=3600
+      - MAX_MEMORY_ITEMS=50
+      - PROMETHEUS_PORT=9090
     depends_on:
       redis:
         condition: service_healthy
@@ -71,8 +82,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
       - /app/.next
-    # For development with hot reload
-    command: npm run dev
+    command: pnpm dev
     networks:
       - tutorbot-network
 
@@ -102,7 +112,6 @@ services:
       - "9090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
       - prometheus_data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
