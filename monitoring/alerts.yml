@@ -1,0 +1,163 @@
+groups:
+  - name: tutorbot_alerts
+    interval: 30s
+    rules:
+      # Availability Alerts
+      - alert: TutorbotBackendDown
+        expr: up{job="tutorbot-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "Tutorbot backend is down"
+          description: "The tutorbot backend has been down for more than 2 minutes."
+          
+      - alert: TutorbotHighErrorRate
+        expr: rate(tutorbot_requests_total{status="error"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is above 10% for the last 5 minutes."
+          
+      # Performance Alerts
+      - alert: TutorbotHighResponseTime
+        expr: histogram_quantile(0.95, rate(tutorbot_response_time_seconds_bucket[5m])) > 3
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is above 3 seconds."
+          
+      - alert: TutorbotVeryHighResponseTime
+        expr: histogram_quantile(0.95, rate(tutorbot_response_time_seconds_bucket[5m])) > 5
+        for: 2m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "Very high response time detected"
+          description: "95th percentile response time is above 5 seconds."
+          
+      # Resource Alerts
+      - alert: TutorbotHighMemoryUsage
+        expr: (container_memory_usage_bytes{container="tutorbot-backend"} / container_spec_memory_limit_bytes{container="tutorbot-backend"}) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 90% of limit."
+          
+      - alert: TutorbotHighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total{container="tutorbot-backend"}[5m]) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 90%."
+          
+      # Session Alerts
+      - alert: TutorbotTooManyActiveSessions
+        expr: tutorbot_active_sessions > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "Too many active sessions"
+          description: "More than 1000 active sessions detected."
+          
+      # Tool Usage Alerts
+      - alert: TutorbotToolFailureRate
+        expr: rate(tutorbot_tool_errors_total[5m]) > 0.05
+        for: 10m
+        labels:
+          severity: warning
+          service: tools
+        annotations:
+          summary: "High tool failure rate"
+          description: "Tool error rate is above 5%."
+          
+      # Redis Alerts
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis is down"
+          description: "Redis cache service is unavailable."
+          
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is above 90%."
+          
+      # API Rate Limiting
+      - alert: TutorbotHighRequestRate
+        expr: sum(rate(tutorbot_requests_total[1m])) > 1000
+        for: 2m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High request rate"
+          description: "Request rate exceeds 1000 requests per minute."
+          
+      # Agent-Specific Alerts
+      - alert: MathAgentHighErrorRate
+        expr: rate(tutorbot_requests_total{agent="MathAgent",status="error"}[5m]) > 0.15
+        for: 5m
+        labels:
+          severity: warning
+          agent: math
+        annotations:
+          summary: "Math Agent high error rate"
+          description: "Math Agent error rate is above 15%."
+          
+      - alert: PhysicsAgentHighErrorRate
+        expr: rate(tutorbot_requests_total{agent="PhysicsAgent",status="error"}[5m]) > 0.15
+        for: 5m
+        labels:
+          severity: warning
+          agent: physics
+        annotations:
+          summary: "Physics Agent high error rate"
+          description: "Physics Agent error rate is above 15%."
+          
+      # Vector Search Alerts
+      - alert: VectorSearchSlow
+        expr: histogram_quantile(0.95, rate(vector_search_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: vector_search
+        annotations:
+          summary: "Vector search is slow"
+          description: "95th percentile vector search time exceeds 1 second."
+          
+      # Embedding Generation Alerts
+      - alert: EmbeddingGenerationFailure
+        expr: rate(embedding_generation_errors_total[5m]) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          service: embeddings
+        annotations:
+          summary: "Embedding generation failures"
+          description: "Embedding generation error rate is above 1%."

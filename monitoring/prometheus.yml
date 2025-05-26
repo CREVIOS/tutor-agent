@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'tutorbot'
+    static_configs:
+      - targets: ['backend:8000']
+    metrics_path: '/metrics'
+    
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+      
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+# Alert rules (optional)
+rule_files:
+  - 'alerts.yml'
+
+# Alertmanager configuration (optional)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
