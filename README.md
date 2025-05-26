@@ -272,10 +272,10 @@ docker-compose logs -f backend
 
 ### Service Verification
 
-1. **Frontend**: http://your-domain.com
-2. **Backend API**: http://your-domain.com/api/health
-3. **Grafana Dashboard**: http://your-domain.com/grafana
-4. **Prometheus Metrics**: http://your-domain.com:9090
+1. **Frontend**: http://138.197.72.190.nip.io/
+2. **Backend API**: http://138.197.72.190.nip.io/api/health
+3. **Grafana Dashboard**: http://138.197.72.190.nip.io/grafana
+4. **Prometheus Metrics**: http://138.197.72.190.nip.io:9090
 
 ## Configuration
 
@@ -437,7 +437,7 @@ GET /api/agents   # Available agent information
 
 1. **Clone and Setup**
 ```bash
-git clone https://github.com/yourusername/tutorbot-system.git
+git clone https://github.com/CREVIOS/tutor-agent.git
 cd tutorbot-system
 ```
 
@@ -521,7 +521,7 @@ docker run --rm -v tutorbot_redis_data:/data -v $(pwd):/backup alpine tar czf /b
 
 **Grafana Dashboard**: [http://138.197.72.190.nip.io:3001/](http://138.197.72.190.nip.io:3001/)
 - Username: admin
-- Password: admin
+- Password: asifsadek
 
 The live demo showcases:
 - Real-time multi-agent conversations
